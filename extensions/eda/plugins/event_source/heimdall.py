@@ -602,8 +602,8 @@ if __name__ == "__main__":
     async def test_run():
         # Test configuration with real values
         test_args = {
-            'heimdall_url': 'https://heimdall-01.corp.ritcsusa.com:8443',
-            'api_key': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlJZCI6IjYiLCJjcmVhdGVkQXQiOiIyMDI1LTA1LTI1VDAzOjE5OjA0LjM4MFoiLCJpYXQiOjE3NDgxNDMxNDR9.BmorujCZHplQwZaA9tpikaRfaPUO9MoqYtKl0C3T5Xg',
+            'heimdall_url': 'https://your-heimdall-server.example.com',
+            'api_key': 'your-real-api-key-here',
             'poll_interval': 30,  # Shorter for testing
             'ssl_verify': False,
             'target_controls': []  # Empty list = check all controls
