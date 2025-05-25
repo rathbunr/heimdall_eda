@@ -1,0 +1,40 @@
+{
+ "collection_info": {
+  "namespace": "ritcsusa",
+  "name": "security_automation",
+  "version": "0.1.0.0",
+  "authors": [
+   "Robert Rathbun <robert.rathbun@outlook.com>"
+  ],
+  "readme": "README.md",
+  "tags": [
+   "security",
+   "vulnerability",
+   "compliance",
+   "mitre",
+   "heimdall",
+   "event_driven_ansible",
+   "eda",
+   "disa_stig",
+   "nist"
+  ],
+  "description": "Enterprise Event-Driven Ansible collection for MITRE HEIMDALL2 security compliance automation",
+  "license": [
+   "Apache-2.0"
+  ],
+  "license_file": null,
+  "dependencies": {},
+  "repository": "https://github.com/rathbunr/ritc.eda",
+  "documentation": "https://github.com/rathbunr/ritc.eda",
+  "homepage": "https://github.com/rathbunr/ritc.eda",
+  "issues": "https://github.com/rathbunr/ritc.eda/issues"
+ },
+ "file_manifest_file": {
+  "name": "FILES.json",
+  "ftype": "file",
+  "chksum_type": "sha256",
+  "chksum_sha256": "5d6ed05aa3376460554b352a853a489f7306ffeffd07c312160457cc8ac8833a",
+  "format": 1
+ },
+ "format": 1
+}

@@ -1,0 +1,144 @@
+---
+- name: MITRE Heimdall Automated Remediation
+  hosts: localhost
+  sources:
+    - name: heimdall
+      heimdall:
+        heimdall_url: "{{ heimdall_url }}"
+        api_key: "{{ heimdall_api_key }}"
+        poll_interval: "{{ poll_interval | default(300) | int }}"
+        ssl_verify: "{{ ssl_verify | default(false) }}"
+        target_controls:
+          - "xccdf_org.ssgproject.content_rule_banner_etc_issue"
+          - "xccdf_org.ssgproject.content_rule_sshd_enable_warning_banner"
+      
+  rules:
+    # Rule for plugin startup - useful for debugging
+    - name: HEIMDALL2 Plugin Started
+      condition: event.heimdall2_startup is defined
+      action:
+        debug:
+          msg: |
+            *** HEIMDALL2 PLUGIN STARTED ***
+            URL: {{ event.heimdall2_startup.url }}
+            Poll Interval: {{ event.heimdall2_startup.poll_interval }}s
+            Target Controls: {{ event.heimdall2_startup.target_controls_count }}
+            SSL Verify: {{ event.heimdall2_startup.ssl_verify }}
+            Timestamp: {{ event.heimdall2_startup.timestamp }}
+
+    # Rule for connectivity events
+    - name: HEIMDALL2 Connectivity Status
+      condition: event.heimdall2_connectivity is defined
+      action:
+        debug:
+          msg: |
+            *** HEIMDALL2 CONNECTIVITY ***
+            Status: {{ event.heimdall2_connectivity.status }}
+            URL: {{ event.heimdall2_connectivity.url }}
+            Status Code: {{ event.heimdall2_connectivity.status_code }}
+            Timestamp: {{ event.heimdall2_connectivity.timestamp }}
+            
+    # Comprehensive rule for ALL failed controls with detailed categorization
+    - name: Comprehensive Failed Controls Report
+      condition: >
+        event.heimdall2_vulnerability is defined and
+        event.heimdall2_vulnerability.status == "failed" 
+      action:
+        debug:
+          msg: |
+            *** FAILED SECURITY CONTROL DETECTED ***
+            -----------------------------------------
+            Host: {{ event.heimdall2_vulnerability.hostname }}
+            Control ID: {{ event.heimdall2_vulnerability.control }}
+            Status: {{ event.heimdall2_vulnerability.status }}
+            Date: {{ event.heimdall2_vulnerability.timestamp }}
+            
+            {% if event.heimdall2_vulnerability.control.startswith('xccdf_org.ssgproject.content_rule_audit_') %}
+            Category: AUDIT CONFIGURATION
+            {% elif event.heimdall2_vulnerability.control.startswith('xccdf_org.ssgproject.content_rule_accounts_') %}
+            Category: ACCOUNT MANAGEMENT
+            {% elif event.heimdall2_vulnerability.control.startswith('xccdf_org.ssgproject.content_rule_sshd_') %}
+            Category: SSH CONFIGURATION
+            {% elif event.heimdall2_vulnerability.control.startswith('xccdf_org.ssgproject.content_rule_service_') %}
+            Category: SERVICE CONFIGURATION
+            {% elif event.heimdall2_vulnerability.control.startswith('xccdf_org.ssgproject.content_rule_mount_option_') %}
+            Category: FILESYSTEM MOUNTS
+            {% elif event.heimdall2_vulnerability.control.startswith('xccdf_org.ssgproject.content_rule_kernel_') %}
+            Category: KERNEL CONFIGURATION
+            {% elif event.heimdall2_vulnerability.control.startswith('xccdf_org.ssgproject.content_rule_sysctl_') %}
+            Category: SYSTEM CONTROLS
+            {% elif event.heimdall2_vulnerability.control.startswith('xccdf_org.ssgproject.content_rule_file_') %}
+            Category: FILE PERMISSIONS
+            {% elif event.heimdall2_vulnerability.control.startswith('xccdf_org.ssgproject.content_rule_banner_') %}
+            Category: SYSTEM BANNERS
+            {% else %}
+            Category: OTHER SECURITY CONTROLS
+            {% endif %}
+            
+            Remediation ID: {{ event.heimdall2_vulnerability.control | regex_replace('xccdf_org.ssgproject.content_rule_', '') }}
+            -----------------------------------------
+
+    # Keep your existing specific rules for targeted actions
+    - name: SSH Banner Control Failed
+      condition: >
+        event.heimdall2_vulnerability is defined and
+        event.heimdall2_vulnerability.control == "xccdf_org.ssgproject.content_rule_sshd_enable_warning_banner" and
+        event.heimdall2_vulnerability.status == "failed"
+      action:
+        debug:
+          msg: |
+            *** SSH BANNER FAILURE DETECTED ***
+            Host: {{ event.heimdall2_vulnerability.hostname }}
+            Control ID: {{ event.heimdall2_vulnerability.control }}
+            Status: {{ event.heimdall2_vulnerability.status }}
+            Date: {{ event.heimdall2_vulnerability.timestamp }}
+            *** REMEDIATION REQUIRED ***
+            
+    # Rule for SSH Service failures
+    - name: SSH Service Control Failed
+      condition: >
+        event.heimdall2_vulnerability is defined and
+        event.heimdall2_vulnerability.control == "xccdf_org.ssgproject.content_rule_service_sshd_enabled" and
+        event.heimdall2_vulnerability.status == "failed"
+      action:
+        debug:
+          msg: |
+            *** SSH SERVICE FAILURE DETECTED ***
+            Host: {{ event.heimdall2_vulnerability.host.hostname }}
+            Control: {{ event.heimdall2_vulnerability.control }}
+            Title: {{ event.heimdall2_vulnerability.title }}
+            Severity: {{ event.heimdall2_vulnerability.severity }}
+            *** SERVICE REMEDIATION REQUIRED ***
+
+    # Rule for SSH Root Login failures
+    - name: SSH Root Login Control Failed
+      condition: >
+        event.heimdall2_vulnerability is defined and
+        event.heimdall2_vulnerability.control == "xccdf_org.ssgproject.content_rule_sshd_disable_root_login" and
+        event.heimdall2_vulnerability.status == "failed"
+      action:
+        debug:
+          msg: |
+            *** SSH ROOT LOGIN FAILURE DETECTED ***
+            Host: {{ event.heimdall2_vulnerability.host.hostname }}
+            Control: {{ event.heimdall2_vulnerability.control }}
+            Title: {{ event.heimdall2_vulnerability.title }}
+            Severity: {{ event.heimdall2_vulnerability.severity }}
+            *** ROOT LOGIN REMEDIATION REQUIRED ***
+
+    # Rule for error handling
+    - name: HEIMDALL2 Error Occurred
+      condition: event.heimdall2_error is defined
+      action:
+        debug:
+          msg: |
+            *** HEIMDALL2 ERROR ***
+            Type: {{ event.heimdall2_error.type }}
+            Message: {{ event.heimdall2_error.message }}
+            Timestamp: {{ event.heimdall2_error.timestamp }}
+            {% if event.heimdall2_error.status_code is defined %}
+            Status Code: {{ event.heimdall2_error.status_code }}
+            {% endif %}
+            {% if event.heimdall2_error.poll_count is defined %}
+            Poll Count: {{ event.heimdall2_error.poll_count }}
+            {% endif %}
