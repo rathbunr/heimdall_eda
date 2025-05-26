@@ -602,8 +602,8 @@ if __name__ == "__main__":
     async def test_run():
         # Test configuration with real values
         test_args = {
-            'heimdall_url': 'https://your-heimdall-server.example.com',
-            'api_key': 'your-real-api-key-here',
+            'heimdall_url': '{{ heimdall_url }}',
+            'api_key': '{{ heimdall_api_key }}',
             'poll_interval': 30,  # Shorter for testing
             'ssl_verify': False,
             'target_controls': []  # Empty list = check all controls
