@@ -1,0 +1,25 @@
+namespace: heimdall
+name: eda
+version: 0.1.0  # ✅ Fixed: SemVer compliant (removed extra .0)
+readme: README.md
+authors:
+  - "RITCS USA <contact@ritcsusa.com>"
+description: Event-driven Ansible collection for MITRE Heimdall security automation
+license:
+  - MIT
+tags:
+  - security
+  - mitre
+  - heimdall
+  - eda
+  - automation
+dependencies: {}
+repository: "https://github.com/rathbunr/heimdall_eda"
+documentation: "https://github.com/rathbunr/heimdall_eda"
+homepage: "https://github.com/rathbunr/heimdall_eda"
+issues: "https://github.com/rathbunr/heimdall_eda/issues"
+build_ignore:
+  - "*.pyc"
+  - ".git"
+  - ".gitignore"
+  - "tests/"
