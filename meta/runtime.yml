@@ -1,4 +1,2 @@
-requires_ansible: '>=2.14.0'
-plugin_routing: {}
-import_redirection: {}
-action_groups: {}
+---
+requires_ansible: '>=2.14'

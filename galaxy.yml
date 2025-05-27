@@ -1,12 +1,12 @@
 namespace: heimdall
 name: eda
-version: 0.1.0  # ✅ Fixed: SemVer compliant (removed extra .0)
+version: 0.1.0 
 readme: README.md
 authors:
-  - "RITCS USA <contact@ritcsusa.com>"
+  - "Robert Rathbun <robert.rathbun@outlook.com>"
 description: Event-driven Ansible collection for MITRE Heimdall security automation
 license:
-  - MIT
+  - Apache-2.0
 tags:
   - security
   - mitre
